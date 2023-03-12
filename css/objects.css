@@ -1,0 +1,131 @@
+.page1 {
+    background-color: white;
+}
+
+.page1 .title {
+    margin-bottom: 20px;
+    background-color: #B2FFFF;
+}
+
+.page1 .instructions {
+    margin-bottom: 10px;
+}
+
+.page1 .instructions .info {
+    background-color: #E8E8E8;
+
+}
+
+.page1 .canvas {
+    background-color: #E8E8E8;
+    min-height: 60vh;
+}
+
+/* #canvasPlaceHolder {
+    min-height: 60vh;
+} */
+
+#dropdownH {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.control-panel {
+    background-color: #F0FFFF;
+    border-color: #B6D0E2 !important;
+}
+
+.control-panel h6 {
+    margin-top: 10px;
+}
+
+.range{
+    height: 40px;
+    /* margin: 150px auto; */
+    /* background: #fff; */
+    /* border-radius: 10px; */
+    padding: 0 50px 0 30px;
+    /* box-shadow: 2px 4px 8px rgba(0,0,0,0.1); */
+}
+  
+.field{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+}
+
+.field .value{
+    position: absolute;
+    font-size: 18px;
+    color: #045fa4;
+    font-weight: 600;
+}
+
+.field .value.left{
+    left: -22px;
+}
+
+.field .value.right{
+    right: -43px;
+}
+
+.range input{
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    z-index: 2222;
+}
+
+#radioOptions {
+    text-align: left;
+    padding-left: 5vw;
+}
+
+#budgetBal {
+    margin-top: 15px;
+}
+
+#purchaseAmount {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#timeControls {
+    padding-top: 15px;
+    margin-top: 2px;
+    margin-left: 0.1vw;
+    margin-right: 0.1vw;
+}
+
+#sHDimensions {
+    margin-top: 50px;
+}
+
+.navbar {
+    margin-bottom: 30px;
+}
+
+.view-options {
+    margin-bottom: 10px;
+}
+
+#preventionCurser {
+    position: absolute;
+    transform: translate(-50%,-50%);
+    opacity: 0.5;
+    /* height:35px;
+    width:35px;
+    border-radius:50%;
+    border:2px solid black; */
+}
+
+#preventionCurser img {
+    width: 20px;
+    height: auto;
+}
