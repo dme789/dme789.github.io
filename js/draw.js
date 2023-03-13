@@ -142,6 +142,10 @@ var timeSlider = d3.select("#timeSlider");
 timeSlider.on("input", function() {
     if (this.value > canvasProp.getYear) {
         incrementYear();
+        if (canvasProp.getYear == 77) {
+            canvasProp.setSimFinished = true;
+            winDetection()
+        }
     }
 });
 
@@ -335,7 +339,7 @@ function budgetInput() {
     if (val <= 0) {
         document.getElementById("budgetInError").innerHTML = "Please enter a positive number.";
     } else {
-        canvasProp.setWeatherStatus = true;
+        canvasProp.setBudgetStatus = true;
         document.getElementById("budgetInError").innerHTML = "";
         preventions.setBudget = val;
         document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
@@ -367,12 +371,24 @@ function setWeather() {
     }
 }
 
+var budgetChange = document.getElementById("budget-input");
+budgetChange.addEventListener('change', formatInBudget);
+
+function formatInBudget() {
+    const numberInput = document.getElementById("budget-input");
+    const formattedNumber = Number(numberInput.value).toLocaleString();
+    document.getElementById("budgetRem").innerHTML = formattedNumber
+}
+
 // *************************** Main Draw Functions **********************************
 
 function skipYears() {
     for (let i = 0; i < 5; i++) {       // skips 5 years
         if (canvasProp.getYear < 77) {
             incrementYear()
+        } else if (canvasProp.getSimFinished == false) {
+            canvasProp.setSimFinished = true;
+            winDetection()
         }
     }
 }
@@ -391,6 +407,18 @@ function incrementYear() {
     else {drawAerialCanvas(canvas)}
     document.getElementById("currYear").innerHTML = canvasProp.getYear;
     document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
+}
+
+function winDetection() {
+    document.getElementById("playButton").disabled = true;
+    document.getElementById("timeSlider").disabled = true;
+    console.log("win detection")
+    infoField.style.display = "none";
+    infoHeader.style.display = "none";
+    resultHolder.style.display = "block";
+    document.getElementById("endSpend").innerHTML = preventions.getTotalSpent.toLocaleString();
+    // var canvasElem = document.getElementById("canvas");
+    // canvasElem.style.opacity = "0.8";
 }
 
 function decreaseBeach() {

@@ -10,6 +10,7 @@ export const canvasProp = {
     dimensions: 0,
     weatherStatus: false,
     budgetStatus: false,
+    simStatus: false,
 
     get getCanvasHeight() {
         return this.height;
@@ -58,6 +59,12 @@ export const canvasProp = {
     },
     set setBudgetStatus(val) {
         this.budgetStatus = val
+    },
+    get getSimFinished() {
+        return this.simStatus;
+    },
+    set setSimFinished(val) {
+        this.simStatus = val;
     },
     incrementYear: function() {
         this.year = this.year + 1;
