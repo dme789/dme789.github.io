@@ -8,6 +8,8 @@ export const canvasProp = {
     state: 0,       // 0 = side view, 1 = aerial view
     year: 0,
     dimensions: 0,
+    weatherStatus: false,
+    budgetStatus: false,
 
     get getCanvasHeight() {
         return this.height;
@@ -44,6 +46,18 @@ export const canvasProp = {
     },
     set setStateDim(val) {
         this.dimensions = val;
+    },
+    get getWeatherStatus() {
+        return this.weatherStatus;
+    },
+    set setWeatherStatus(val) {
+        this.weatherStatus = val
+    },
+    get getBudgetStatus() {
+        return this.budgetStatus;
+    },
+    set setBudgetStatus(val) {
+        this.budgetStatus = val
     },
     incrementYear: function() {
         this.year = this.year + 1;
@@ -300,8 +314,9 @@ export const maxWave = {
 }
 
 export const preventions = {
-    // budget: 116500,
-    budget: 100000000,
+    budget: 0,
+    totalSpent: 0,
+    // budget: 100000000,
     bought: [],
 
     get getBudget() {
@@ -310,10 +325,14 @@ export const preventions = {
     set setBudget(val) {
         this.budget = val;
     },
+    get getTotalSpent() {
+        return this.totalSpent;
+    },
     increaseBudget: function(val) {
         this.budget = this.budget + val;
     },
     decreaseBudget: function(val) {
+        this.totalSpent = this.totalSpent + val;
         this.budget = this.budget - val;
     },
     get getBought() {

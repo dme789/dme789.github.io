@@ -326,6 +326,47 @@ const onMouseMove = (e) =>{
     }
 }
 
+const budgetIn = document.getElementById('budgetInput');
+budgetIn.addEventListener('click', budgetInput);
+
+function budgetInput() {
+    const budgetIn = document.getElementById("budget-input");
+    const val =  Number(budgetIn.value);
+    if (val <= 0) {
+        document.getElementById("budgetInError").innerHTML = "Please enter a positive number.";
+    } else {
+        canvasProp.setWeatherStatus = true;
+        document.getElementById("budgetInError").innerHTML = "";
+        preventions.setBudget = val;
+        document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
+        document.getElementById("budget-input").disabled = true;
+        document.getElementById("budgetInput").disabled = true;
+        if (canvasProp.getWeatherStatus == true) {
+            document.getElementById("playButton").disabled = false;
+            document.getElementById("timeSlider").disabled = false;
+            document.getElementById("confirmedPurchase").disabled = false;
+        }
+    }
+}
+
+const weatherSet = document.getElementById('setWeather');
+weatherSet.addEventListener('click', setWeather);
+
+function setWeather() {
+    canvasProp.setWeatherStatus = true;
+    setSelectedTide()
+    setSelectWaveHeight()
+    document.getElementById("seaRiseSlider").disabled = true;
+    document.getElementById("maxWaveHeightSlider").disabled = true;
+    document.getElementById("radioOptions").disabled = true;
+    document.getElementById('setWeather').disabled = true;
+    if (canvasProp.getBudgetStatus == true) {
+        document.getElementById("playButton").disabled = false;
+        document.getElementById("timeSlider").disabled = false;
+        document.getElementById("confirmedPurchase").disabled = false;
+    }
+}
+
 // *************************** Main Draw Functions **********************************
 
 function skipYears() {
@@ -340,8 +381,8 @@ function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 77);    // sea rise next 50 years -> to 1 year avg
-    var budgetIncr = 116500 * (1 + (canvasProp.getYear / 100))  // 1% budget increase every year
-    preventions.increaseBudget(budgetIncr);
+    // var budgetIncr = 116500 * (1 + (canvasProp.getYear / 100))  // 1% budget increase every year
+    // preventions.increaseBudget(budgetIncr);
     checkHouseFalling()
     decreaseBeach()
     calcDuneErosion()
