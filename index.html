@@ -69,23 +69,29 @@
             <div class="col-2"></div>
         </div>
 
+        <!-- Tooltip newLine =  &#x0a -->
+
+
         <div class="row">
             <div class="col-2">
                 <div class="card control-panel border rounded-3">
                     <h4 class="card-title">Weather Variables</h4>
                     <div class="control-option">
-                        <h6 data-bs-toggle="tooltip" data-bs-placement="top" title="Some info text!">Sea Rise</h6>
+                        <h6 data-bs-toggle="tooltip" data-bs-placement="top" 
+                            title="The rate you set is for the entire simulation.&#x0aNot per year!">Sea Rise
+                        </h6>
                         <div class="range">
                             <div class="field">
                                 <div class="value left">0.5m</div>
-                                <!-- <input type="range" min="0.4" max="0.8" value="0.4" step="0.1" class="seaRiseSlider" id="seaRiseSlider"> -->
                                 <input type="range" min="0.5" max="2" value="0.5" step="0.25" class="seaRiseSlider" id="seaRiseSlider">
                                 <div class="value right">2m</div>
                             </div>
                         </div>
                     </div>
                     <div class="control-option">
-                        <h6>Max Wave Height</h6>
+                        <h6 data-bs-toggle="tooltip" data-bs-placement="top" 
+                        title="The height you set is the wave height from crest to trough.&#x0aThis means you will only see the top half of the wave in the simulation.&#x0aThis is exactly half of the value you decide to set!">
+                        Max Wave Height</h6>
                         <div class="range">
                             <div class="field">
                                 <div class="value left">6m</div>
@@ -107,17 +113,18 @@
                     </div>
                     <div>
                         <button type="button" class="btn btn-success" id="setWeather">Set Weather</button>
-                        <p id="budgetInError"></p>
                     </div>
                 </div>
 
-                <div id="sHDimensions">
-                    <button type="button" class="btn btn-primary active" id="sHDimensionsB">Show Dimensions</button>
-                </div>
+                <div class="card control-panel border rounded-3" id="showHides">
+                    <div id="sHDimensions">
+                        <button type="button" class="btn btn-primary active" id="sHDimensionsB">Show Dimensions</button>
+                    </div>
 
-                <!-- <div id="sHWaves">
-                    <button type="button" class="btn btn-info" id="sHWaves">Hide Waves</button>
-                </div> -->
+                    <div id="sHWaves">
+                        <button type="button" class="btn btn-primary active" id="sHWavesB">Hide Waves</button>
+                    </div>
+                </div>
 
             </div>
             <div id="canvasPlaceHolder" class="col-8">
@@ -131,17 +138,22 @@
                         <button type="button" class="btn btn-danger" id="playButton" disabled>Skip 5 Years</button>
                     </div>
                     <div class="col-6">
-                        <label for="timeSlider">Time</label>
-                        <input type="range" min="0" max="77" value="0" class="timeSlider" id="timeSlider" disabled>
+                        <div class="range">
+                            <div class="field">
+                                <input type="range" min="0" max="77" value="0" step="1" class="timeSlider" id="timeSlider">
+                            </div>
+                        </div>
+                        <!-- <label for="timeSlider">Time</label>
+                        <input type="range" min="0" max="77" value="0" class="timeSlider" id="timeSlider" disabled> -->
                     </div>
                 </div>
             </div>
             <div class="col-2">
                 <div class="budget-Input card control-panel border rounded-3">
-                    <h5 >Enter your budget: €</h5>
+                    <h5>Enter your budget: €</h5>
+                    <p id="budgetInError"></p>
                     <input type="number" id="budget-input" min="0">
                     <button type="button" class="btn btn-success" id="budgetInput">Set Budget</button>
-                    <p id="budgetInError"></p>
                 </div>
                 <div class="card control-panel border rounded-3">
                     <h4 class="card-title">Budget Choices</h4>

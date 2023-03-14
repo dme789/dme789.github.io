@@ -131,25 +131,30 @@ function userDimensions() {
     if (canvasProp.getStateDim == 0) {
         canvasProp.setStateDim = 1
         document.getElementById("sHDimensionsB").innerHTML = "Hide Dimensions";
+        sHDimensionsB.classList.add("active");
+        sHDimensionsB.classList.remove("active");
     } else {
         canvasProp.setStateDim = 0
         document.getElementById("sHDimensionsB").innerHTML = "Show Dimensions";
+        sHDimensionsB.classList.add("active");
     }
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
 }
 
-// const wavesButton = document.getElementById('sHWaves');
-// wavesButton.addEventListener('click', userWaves);
-// function userWaves() {
-//     if (canvasProp.getStateWaves == 0) {
-//         canvasProp.setStateWaves = 1
-//         document.getElementById("sHWaves").innerHTML = "Show Waves";
-//     } else {
-//         canvasProp.setStateWaves = 0
-//         document.getElementById("sHWaves").innerHTML = "Hide Waves";
-//     }
-//     if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
-// }
+const wavesButton = document.getElementById('sHWavesB');
+wavesButton.addEventListener('click', userWaves);
+function userWaves() {
+    if (canvasProp.getStateWaves == 0) {
+        canvasProp.setStateWaves = 1
+        document.getElementById("sHWavesB").innerHTML = "Hide Waves";
+        sHWavesB.classList.add("active");
+    } else {
+        canvasProp.setStateWaves = 0
+        document.getElementById("sHWavesB").innerHTML = "Show Waves";
+        sHWavesB.classList.remove("active");
+    }
+    if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
+}
 
 var timeSlider = d3.select("#timeSlider");
 timeSlider.on("input", function() {
