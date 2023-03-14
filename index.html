@@ -43,7 +43,9 @@
             </div>
             <div id="resultHolder" class="offset-2 col-8 info" style="display:none;">
                 <h2>Simulation Over!</h2>
-                <p>Total Spent <b>€<span id="endSpend"></span></b></p>
+                <p>Total Spent: <b>€<span id="endSpend"></span></b></p>
+                <p>Dune Lost: <b><span id="duneLost"></span> metres</b></p>
+                <p>Houses Destroyed: <b><span id="housesDestroyed"></span>%</b></p>
                 <button type="button" class="btn btn-danger" id="restartSim" onClick="window.location.reload()">Play Again</button>
             </div>
         </div>
@@ -51,7 +53,7 @@
             <div class="offset-2 col-8 info" id="infoField">
                 <p>1. Set your budget and weather variables<br>2. Run the simulation by clicking on the play button 
                     or dragging the time slider<br>3. You can buy preventions at any point throughout the simulation<br>4. 
-                    The simulation runs for 77 years!</p>
+                    The simulation runs for 2100 years!</p>
             </div>
         </div>
     </div>
@@ -75,10 +77,10 @@
                         <h6 data-bs-toggle="tooltip" data-bs-placement="top" title="Some info text!">Sea Rise</h6>
                         <div class="range">
                             <div class="field">
-                                <div class="value left">1</div>
+                                <div class="value left">0.5m</div>
                                 <!-- <input type="range" min="0.4" max="0.8" value="0.4" step="0.1" class="seaRiseSlider" id="seaRiseSlider"> -->
-                                <input type="range" min="0.7" max="1.9" value="0.7" step="0.3" class="seaRiseSlider" id="seaRiseSlider">
-                                <div class="value right">5</div>
+                                <input type="range" min="0.5" max="2" value="0.5" step="0.25" class="seaRiseSlider" id="seaRiseSlider">
+                                <div class="value right">2m</div>
                             </div>
                         </div>
                     </div>
@@ -86,15 +88,15 @@
                         <h6>Max Wave Height</h6>
                         <div class="range">
                             <div class="field">
-                                <div class="value left">1</div>
+                                <div class="value left">6m</div>
                                 <input type="range" min="6" max="9" value="6" class="maxWaveHeightSlider" id="maxWaveHeightSlider">
-                                <div class="value right">4</div>
+                                <div class="value right">9m</div>
                             </div>
                         </div>
                     </div>
                     <div class="control-option">
                         <h6>Tide Selection</h6>
-                        <form id="radioOptions">
+                        <form id="radioOptions tideOptions">
                             <input type="radio" id="lowTide" name="tideSelection" value="1">
                             <label for="lowTide">Low</label><br>
                             <input type="radio" id="averageTide" name="tideSelection" value="2" checked="checked">
@@ -112,6 +114,11 @@
                 <div id="sHDimensions">
                     <button type="button" class="btn btn-primary active" id="sHDimensionsB">Show Dimensions</button>
                 </div>
+
+                <!-- <div id="sHWaves">
+                    <button type="button" class="btn btn-info" id="sHWaves">Hide Waves</button>
+                </div> -->
+
             </div>
             <div id="canvasPlaceHolder" class="col-8">
                 <div id="preventionCurser" style="display:none;"></div>
@@ -141,11 +148,11 @@
                     <span id="budgetBal">Budget Balance: <b>€<span id="budgetRem"></span></b></span>
                     <h6>Prevention Options:</h6>
                     <form id="radioOptions">
-                        <input type="radio" id="seabees" name="preventionBought" value="1500000">
+                        <input type="radio" id="seabees" name="preventionBought" value="1500000" disabled>
                         <label for="seabees">Seabees</label><br>
-                        <input type="radio" id="seawall" name="preventionBought" value="5200000">
+                        <input type="radio" id="seawall" name="preventionBought" value="5200000" disabled>
                         <label for="seawall">Sea Wall</label><br>
-                        <input type="radio" id="sand" name="preventionBought" value="2320000">
+                        <input type="radio" id="sand" name="preventionBought" value="2320000" disabled>
                         <label for="sand">Sand</label><br>
                         <!-- <input type="radio" id="buyHouses" name="preventionBought" value="">
                         <label for="buyHouses">Buy Houses</label><br> -->

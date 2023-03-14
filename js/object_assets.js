@@ -8,9 +8,11 @@ export const canvasProp = {
     state: 0,       // 0 = side view, 1 = aerial view
     year: 0,
     dimensions: 0,
+    wavesState: 1,
     weatherStatus: false,
     budgetStatus: false,
     simStatus: false,
+    housesDestroyed: false,
 
     get getCanvasHeight() {
         return this.height;
@@ -48,6 +50,12 @@ export const canvasProp = {
     set setStateDim(val) {
         this.dimensions = val;
     },
+    get getStateWaves() {
+        return this.wavesState;
+    },
+    set setStateWaves(val) {
+        this.wavesState = val;
+    },
     get getWeatherStatus() {
         return this.weatherStatus;
     },
@@ -65,6 +73,12 @@ export const canvasProp = {
     },
     set setSimFinished(val) {
         this.simStatus = val;
+    },
+    get getHousesDestroyed() {
+        return this.housesDestroyed;
+    },
+    set setHousesDestroyed(val) {
+        this.housesDestroyed = val;
     },
     incrementYear: function() {
         this.year = this.year + 1;
@@ -164,6 +178,7 @@ export const dune = {
     absBankLength: 0.05,
     width: 0.25,
     slope: 1.66666,
+    lengthLost: 0,
 
     get getDuneHeight() {
         return this.height
@@ -187,6 +202,12 @@ export const dune = {
     get getSlope() {
         return this.slope;
     },
+    get getLengthLost() {
+        return this.lengthLost;
+    },
+    increaseLengthLost: function(val) {
+        this.lengthLost = this.lengthLost + val;
+    },
     reCalcSlope: function() {
         this.slope = this.height / this.bankLength
     },
@@ -196,13 +217,22 @@ export const dune = {
     erode: function(erosionRate) {
         if(this.slope <= -1) {
             this.setDuneBankLength = 0;
-        } else if (tide.getLength > beach.getSlopeWidth) {
+        } else if (tide.getLength > beach.getSlopeWidth) {                  // Normal Erosion
             var erosionLength = (tide.getLength - beach.getBeachWidth);
             if (this.slope < 0) {
                 erosionLength = erosionLength / 2;
             }
             this.setDuneBankLength = this.getDuneBankLength - erosionRate;
             beach.setBeachWidth = beach.getBeachWidth + erosionRate;
+            this.increaseLengthLost(erosionRate)
+        } else if (beach.getBeachWidth + maxWave.getWashLength > beach.getSlopeWidth) {     // Wave Erosion
+            var erosionLength = maxWave.getWashLength / 2;          // 50% power reduction due to sea not fully extended
+            if (this.slope < 0) {
+                erosionLength = erosionLength / 2;
+            }
+            this.setDuneBankLength = this.getDuneBankLength - erosionRate;
+            beach.setBeachWidth = beach.getBeachWidth + erosionRate;
+            this.increaseLengthLost(erosionRate)
         }
     }
 };
@@ -310,6 +340,7 @@ export const tide = {
 export const maxWave = {
     height: 0,
     length: 0,
+    washLength: 0,
 
     get getHeight() {
         return this.height;
@@ -317,6 +348,33 @@ export const maxWave = {
     set setHeight(val) {
         this.height = (1 / canvasProp.getRealHeight) * val;
         this.length = tide.getLength
+    },
+    get getWashLength() {
+        return this.washLength;
+    },
+    set setWashLength(val) {
+        this.washLength = val;
+    },
+    calculateWaveWashLength: function() {
+        // var height = sea.getHeight + tide.getHeight;
+        // if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= beach.getBeachMaxHeight) {
+        //     this.washLength = (height - (beach.getAbsMinHeight - beach.getBeachMinHeight)) / beach.getBeachSlope;
+        // } else if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= (beach.getAbsMaxHeight - dune.getDuneHeight)) {
+        //     var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - height);
+        //     this.washLength = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
+        // } else {
+        //     this.washLength = 1
+        // }
+
+        var height = sea.getHeight + tide.getHeight;
+        if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= beach.getBeachMaxHeight) {
+            this.washLength = 0;
+        } else if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= (beach.getAbsMaxHeight - dune.getDuneHeight)) {
+            var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - height);
+            this.washLength = duneWaterLine/dune.getSlope;
+        } else {
+            this.washLength = 1 - beach.getBeachWidth
+        }
     }
 }
 
@@ -444,9 +502,16 @@ export const seaWalls = {
 
 export const housesArr = {
     houses: [],
+    numHousesDestroyed: 0,
 
     get getHouses() {
         return this.houses;
+    },
+    get getNumHousesDestroyed() {
+        return this.numHousesDestroyed;
+    },
+    incrNumHousesDestroyed: function() {
+        this.numHousesDestroyed = this.numHousesDestroyed + 1;
     }
 }
 

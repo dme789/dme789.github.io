@@ -105,7 +105,15 @@
 
 #sHDimensions {
     margin-top: 50px;
+    margin-bottom: 15px;
 }
+
+#sHWaves {
+    margin-top: 15px;
+    position: relative;
+    z-index: 9;
+}
+
 
 .navbar {
     margin-bottom: 30px;

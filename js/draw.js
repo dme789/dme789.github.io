@@ -27,7 +27,7 @@ for (var i = 0; i < 8; i++) {
 }
 
 drawSideCanvas(canvas)
-document.getElementById("currYear").innerHTML = 0;
+document.getElementById("currYear").innerHTML = 2023;
 document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
 document.getElementById("purchaseAmountTot").innerHTML = 0;
 
@@ -42,7 +42,7 @@ function drawSideCanvas(canvas) {
     setSelectWaveHeight()
     canvas = drawBackground(canvas)
     canvas = drawSideSea(canvas)
-    canvas = drawSideMaxWave(canvas)
+    if (canvasProp.getStateWaves == 1) {canvas = drawSideMaxWave(canvas)}
     canvas = drawSideTide(canvas);
     canvas = drawSidePreventions(canvas)
     canvas = drawSideBeach(canvas)
@@ -137,6 +137,19 @@ function userDimensions() {
     }
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
 }
+
+// const wavesButton = document.getElementById('sHWaves');
+// wavesButton.addEventListener('click', userWaves);
+// function userWaves() {
+//     if (canvasProp.getStateWaves == 0) {
+//         canvasProp.setStateWaves = 1
+//         document.getElementById("sHWaves").innerHTML = "Show Waves";
+//     } else {
+//         canvasProp.setStateWaves = 0
+//         document.getElementById("sHWaves").innerHTML = "Hide Waves";
+//     }
+//     if (canvasProp.getState == 0) {drawSideCanvas(canvas)} else {drawAerialCanvas(canvas)}
+// }
 
 var timeSlider = d3.select("#timeSlider");
 timeSlider.on("input", function() {
@@ -349,6 +362,10 @@ function budgetInput() {
             document.getElementById("playButton").disabled = false;
             document.getElementById("timeSlider").disabled = false;
             document.getElementById("confirmedPurchase").disabled = false;
+
+            document.getElementById("seabees").disabled = false;
+            document.getElementById("seawall").disabled = false;
+            document.getElementById("sand").disabled = false;
         }
     }
 }
@@ -362,12 +379,18 @@ function setWeather() {
     setSelectWaveHeight()
     document.getElementById("seaRiseSlider").disabled = true;
     document.getElementById("maxWaveHeightSlider").disabled = true;
-    document.getElementById("radioOptions").disabled = true;
+    document.getElementById("lowTide").disabled = true;
+    document.getElementById("averageTide").disabled = true;
+    document.getElementById("highTide").disabled = true;
     document.getElementById('setWeather').disabled = true;
     if (canvasProp.getBudgetStatus == true) {
         document.getElementById("playButton").disabled = false;
         document.getElementById("timeSlider").disabled = false;
         document.getElementById("confirmedPurchase").disabled = false;
+
+        document.getElementById("seabees").disabled = false;
+        document.getElementById("seawall").disabled = false;
+        document.getElementById("sand").disabled = false;
     }
 }
 
@@ -397,16 +420,18 @@ function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
     sea.increaseSeaRise(seaRise / 77);    // sea rise next 50 years -> to 1 year avg
-    // var budgetIncr = 116500 * (1 + (canvasProp.getYear / 100))  // 1% budget increase every year
-    // preventions.increaseBudget(budgetIncr);
+    const budgetInput = document.getElementById("budget-input");
+    var budgetIncr = Number(budgetInput.value);   // 1% budget increase every year
+    preventions.increaseBudget(budgetIncr);
     checkHouseFalling()
     decreaseBeach()
     calcDuneErosion()
     document.getElementById("timeSlider").value = canvasProp.getYear;
     if (canvasProp.getState == 0) {drawSideCanvas(canvas)}
     else {drawAerialCanvas(canvas)}
-    document.getElementById("currYear").innerHTML = canvasProp.getYear;
+    document.getElementById("currYear").innerHTML = 2023 + canvasProp.getYear;
     document.getElementById("budgetRem").innerHTML = preventions.getBudget.toLocaleString();
+    if(canvasProp.getHousesDestroyed == true) {winDetection()}
 }
 
 function winDetection() {
@@ -417,6 +442,8 @@ function winDetection() {
     infoHeader.style.display = "none";
     resultHolder.style.display = "block";
     document.getElementById("endSpend").innerHTML = preventions.getTotalSpent.toLocaleString();
+    document.getElementById("housesDestroyed").innerHTML = (housesArr.getNumHousesDestroyed / housesArr.getHouses.length) * 100;
+    document.getElementById("duneLost").innerHTML = Math.round((dune.getLengthLost * canvasProp.getRealLength) * 100) / 100;
     // var canvasElem = document.getElementById("canvas");
     // canvasElem.style.opacity = "0.8";
 }
@@ -438,21 +465,33 @@ function decreaseBeach() {
 
 function calcDuneErosion() {
     tide.setLength = getPreventionWaterLevel(tide.getLength, (beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight))
+    var waveWashL = beach.getBeachWidth + maxWave.getWashLength
+    var erosion = false;
     if(preventions.bought.length > 0) {
         var furtherestPrev = preventions.bought[preventions.bought.length - 1]
         var prevEnd = furtherestPrev.getLength + (furtherestPrev.getWidth / 2)
-        // console.log("Prev: " + prevEnd + ", Sea: " + sea.getLength + ", Tide: " + tide.getLength)
-        if ((sea.getLength > prevEnd) || (tide.getLength > prevEnd)) {
+        if (waveWashL > tide.getLength) {
             if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
-                var erosionRate = ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) - beach.getBeachMaxHeight) * -1;
-                dune.erode(erosionRate);
+                erosion = true;
+            }
+        } 
+        else if ((sea.getLength > prevEnd) || (tide.getLength > prevEnd)) {
+            if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
+                erosion = true;
             }
         }
     } else {
-        if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
-            var erosionRate = ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) - beach.getBeachMaxHeight) * -1;
-            dune.erode(erosionRate);
+        if (waveWashL > tide.getLength) {
+            if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
+                erosion = true;
+            }
+        } 
+        else if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) < beach.getBeachMaxHeight) {
+            erosion = true;
         }
+    }
+    if (erosion == true) {
+        dune.erode(((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) - beach.getBeachMaxHeight) * -1);
     }
 }
 
@@ -541,17 +580,26 @@ function drawRealDimLabels(canvas, xLabel, yLabel) {
 
 function checkHouseFalling() {
     var distRow = 0;
+    var tempStatus = true;
+    var maxWaterDist = tide.getLength
+    if (beach.getBeachWidth + maxWave.getWashLength > maxWaterDist) {maxWaterDist = beach.getBeachWidth + maxWave.getWashLength}
     for(var i = 0; i < 2; i++) {
         if (i > 0) {distRow = 0.13;}
         const tempHouse = housesArr.getHouses[i * 8]
-        if ( tide.getLength > (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + (tempHouse.getWidth /2))) {
+        if (maxWaterDist > (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + (tempHouse.getWidth /2))) {
             for(var j = i; j < ((1 + i) * 8); j++) {
                 const tHouse = housesArr.getHouses[j]
-                tHouse.setStatus = true;
-                tHouse.setHeight = 0.05;
+                if (tHouse.getStatus == false) {
+                    tHouse.setStatus = true;
+                    tHouse.setHeight = 0.05;
+                    housesArr.incrNumHousesDestroyed()
+                }
             }
+        } else {
+            tempStatus = false;
         }
     }
+    canvasProp.setHousesDestroyed = tempStatus;
 }
 
 
@@ -719,23 +767,28 @@ function drawSideMaxWave(canvas) {
         if (i+1 < preventions.bought.length){
             end = preventions.bought[i+1].getLength - (preventions.bought[i+1].getWidth / 2)
         } else {
-            end = beach.getSlopeWidth;
+            maxWave.calculateWaveWashLength()
+            end = beach.getBeachWidth + maxWave.getWashLength;
         }
         var prevHeight = cH * (prev.getYPos - prev.getHeight)
         if (prev.name == "seabees") {
             if (prevHeight <= seaH) {
                 waveHeight = waveHeight * prev.getWaveDecrease
-            } else {
-                waveHeight = waveHeight * 0.6;  // seabee only 40% decrease in wave height if sea & tide is higher than seabee
-            }
-        canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, false)
-        } else if (prev.name == "seawall" || prev.name == "sand") {
-            if (prevHeight <= seaH) {
-                var excessWave = (prev.getYPos - prev.getHeight) - (beach.getAbsMinHeight - sea.getHeight - tH - waveHeight)
-                waveHeight = excessWave
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
             } else {
-                waveHeight = waveHeight * 0.8;
+                waveHeight = waveHeight * 0.9;  // seabee only 10% decrease in wave height if sea & tide is higher than seabee
+                canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
+            }
+        } else if (prev.name == "seawall" || prev.name == "sand") {
+            if (prevHeight <= seaH) {
+                var maxExcessWave = waveHeight * 0.6;
+                var excessWave = (prev.getYPos - prev.getHeight) - (beach.getAbsMinHeight - sea.getHeight - tH - waveHeight)
+                if (excessWave < maxExcessWave) {
+                    waveHeight = excessWave
+                } else {waveHeight = maxExcessWave}
+                canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
+            } else {
+                waveHeight = waveHeight * 0.6; // wall only 40% decrease in wave height if sea & tide is higher than wall
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, false)
             }
         }
@@ -749,35 +802,36 @@ function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH, broken) {
     var highLow = 0;
     var lineFunction = null;
     if (broken == true) {
-        // line = [
-        //     {"x": cW * xmin, "y": cH * beach.getAbsMinHeight},
-        //     {"x": cW * xmin, "y": cH * (beach.getAbsMinHeight - waveH)},
-        //     {"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - waveH)},
-        //     {"x": cW * xmax, "y": cH * beach.getAbsMinHeight},
-        //     {"x": cW * xmin, "y": cH * beach.getAbsMinHeight},
-        // ];
-        for (var i = xmin; i < xmax; i = i + 0.09) {
-            var variableT = 0;
-            if (highLow % 2 != 0) {
-                variableT = waveH
-            }
-            var height = cH * (beach.getAbsMinHeight - variableT)
-            line[highLow] = {"x": cW * i, "y": height}
-            highLow = highLow + 1;
-        }
+        line = [
+            {"x": cW * xmin, "y": cH * beach.getAbsMinHeight},
+            {"x": cW * xmin, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)},
+            {"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)},
+            {"x": cW * xmax, "y": cH * beach.getAbsMinHeight},
+            {"x": cW * xmin, "y": cH * beach.getAbsMinHeight},
+        ];
+
         line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight)})
-    } else {
-        for (var i = xmin; i < xmax; i = i + 0.09) {
-            var variableT = 0;
-            if (highLow % 2 != 0) {
-                variableT = waveH
-            }
-            var height = cH * (beach.getAbsMinHeight - sea.getHeight - tH - variableT)
-            line[highLow] = {"x": cW * i, "y": height}
-            highLow = highLow + 1;
-        }
-        line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)})
+
+        lineFunction = d3.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+
+        canvas.append("path")
+            .attr("d", lineFunction(line))
+            // .attr("fill", "#87CEFA")
+            .attr("fill", "#ABDCFB")
     }
+    line = []
+    for (var i = xmin; i < xmax; i = i + 0.09) {
+        var variableT = 0;
+        if (highLow % 2 != 0) {
+            variableT = waveH
+        }
+        var height = cH * (beach.getAbsMinHeight - sea.getHeight - tH - variableT)
+        line[highLow] = {"x": cW * i, "y": height}
+        highLow = highLow + 1;
+    }
+    line.push({"x": cW * xmax, "y": cH * (beach.getAbsMinHeight - sea.getHeight - tH)})
 
     lineFunction = d3.line()
         .x(function(d) { return d.x; })
@@ -787,6 +841,7 @@ function drawSideWave(canvas, tH, cW, cH, xmin, xmax, waveH, broken) {
     canvas.append("path")
         .attr("d", lineFunction(line))
         .attr("fill", "#ABDCFB")
+        // .attr("fill", "#87CEFA")
 
     return canvas
 }
