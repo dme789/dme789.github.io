@@ -1,18 +1,18 @@
-// Canvas properties
+// Propeties of the visualisation element and microworld rules.
 export const canvasProp = {
-    height: 0,
-    width: 0,
+    height: 0, // div element height
+    width: 0,   // div element width
     realHeight: 15,
     realWidth: 1000,
     realLength: 100,
-    state: 0,       // 0 = side view, 1 = aerial view
-    year: 0,
-    dimensions: 0,
-    wavesState: 1,
-    weatherStatus: false,
-    budgetStatus: false,
-    simStatus: false,
-    housesDestroyed: false,
+    state: 0,   // 0 = side view, 1 = aerial view
+    year: 0,    // year of sim    
+    dimensions: 0,  // 0 = dimensions not shown
+    wavesState: 1,  // 1 = waves shown
+    weatherStatus: false, // true once weather is set by user
+    budgetStatus: false, // true once weather is set by user
+    simStatus: false,   // true once simulation is over   
+    housesDestroyed: false,     // true when all houses destroyed
 
     get getCanvasHeight() {
         return this.height;
@@ -214,22 +214,17 @@ export const dune = {
     reCalculateSlope: function(decrease) {
         this.slope = (this.height + decrease) / this.bankLength;
     },
+    // this function erodes the dune by the given erosionRate
+    // two erosion types occur, 
     erode: function(erosionRate) {
         if(this.slope <= -1) {
             this.setDuneBankLength = 0;
         } else if (tide.getLength > beach.getSlopeWidth) {                  // Normal Erosion
-            var erosionLength = (tide.getLength - beach.getBeachWidth);
-            if (this.slope < 0) {
-                erosionLength = erosionLength / 2;
-            }
             this.setDuneBankLength = this.getDuneBankLength - erosionRate;
             beach.setBeachWidth = beach.getBeachWidth + erosionRate;
             this.increaseLengthLost(erosionRate)
         } else if (beach.getBeachWidth + maxWave.getWashLength > beach.getSlopeWidth) {     // Wave Erosion
-            var erosionLength = maxWave.getWashLength / 2;          // 50% power reduction due to sea not fully extended
-            if (this.slope < 0) {
-                erosionLength = erosionLength / 2;
-            }
+            var erosionRate = erosionRate / 5;          // 80% erosion reduction due to being storm erosion
             this.setDuneBankLength = this.getDuneBankLength - erosionRate;
             beach.setBeachWidth = beach.getBeachWidth + erosionRate;
             this.increaseLengthLost(erosionRate)
@@ -356,16 +351,6 @@ export const maxWave = {
         this.washLength = val;
     },
     calculateWaveWashLength: function() {
-        // var height = sea.getHeight + tide.getHeight;
-        // if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= beach.getBeachMaxHeight) {
-        //     this.washLength = (height - (beach.getAbsMinHeight - beach.getBeachMinHeight)) / beach.getBeachSlope;
-        // } else if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= (beach.getAbsMaxHeight - dune.getDuneHeight)) {
-        //     var duneWaterLine = beach.getBeachMaxHeight - (beach.getBeachMinHeight - height);
-        //     this.washLength = beach.getBeachWidth + (duneWaterLine/ dune.getSlope);
-        // } else {
-        //     this.washLength = 1
-        // }
-
         var height = sea.getHeight + tide.getHeight;
         if ((beach.getAbsMinHeight - sea.getHeight - tide.getCurrHeight) >= beach.getBeachMaxHeight) {
             this.washLength = 0;
@@ -416,7 +401,7 @@ export const seaBees = {
     height: 0.066667,
     width: 0.02,
     length: 0,          // x-position of sea-bees
-    waveDecrease: 0.3,
+    waveDecrease: 0.5,
     yPos: 0,
 
     get getName() {

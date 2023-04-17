@@ -126,6 +126,7 @@ function reDrawAerialCanvas() {
     drawAerialCanvas(canvas)
 }
 
+// detects change in showing and hiding dimensions
 const dimensionsOption = document.getElementById('sHDimensionsB');
 dimensionsOption.addEventListener('click', userDimensions);
 function userDimensions() {
@@ -226,15 +227,6 @@ sandSelected.addEventListener("change", function() {
     }
 })
 
-// const buyHousesSelected = document.getElementById('buyHouses');
-// buyHousesSelected.addEventListener("change", function() {
-//     if (buyHousesSelected.checked) {
-//         buyHousesInstructions.style.display = "block";
-//     } else {
-//         buyHousesInstructions.style.display = "none";
-//     }
-// })
-
 var preventionSelected = document.getElementsByName("preventionBought");
 for (var i = 0; i < preventionSelected.length; i++) {
     preventionSelected[i].addEventListener("change", function() {
@@ -245,10 +237,6 @@ for (var i = 0; i < preventionSelected.length; i++) {
             dropdownH.style.display = "block"
             buyHousesInstructions.style.display = "none";
         } 
-        // else if(buyHousesSelected.checked) {
-        //     dropdownH.style.display = "none"
-        //     buyHousesInstructions.style.display = "block";
-        // }
         else {
             dropdownH.style.display = "none"
             buyHousesInstructions.style.display = "none";
@@ -303,7 +291,7 @@ function purchasePrevention() {
                 var sandH = (getUserPreventionHeight() / (2 * canvasProp.getRealHeight));
                 beach.setBeachMinHeight = beach.getBeachMinHeight - sandH;
                 beach.setBeachMaxHeight = beach.getBeachMaxHeight - sandH;
-                beach.setLifeSpan = 15;
+                beach.setLifeSpan = 10;
                 beach.calcDecreaseRate();
                 sea.calcSeaLength();
                 if (canvasProp.getState == 0) {
@@ -426,9 +414,9 @@ function skipYears() {
 function incrementYear() {
     var seaRise = document.getElementById("seaRiseSlider").value;
     canvasProp.incrementYear()
-    sea.increaseSeaRise(seaRise / 77);    // sea rise next 50 years -> to 1 year avg
+    sea.increaseSeaRise(seaRise / 77);    // sea rise next 77 years -> to 1 year avg
     const budgetInput = document.getElementById("budget-input");
-    var budgetIncr = Number(budgetInput.value);   // 1% budget increase every year
+    var budgetIncr = Number(budgetInput.value);   // budget increase every year
     preventions.increaseBudget(budgetIncr);
     checkHouseFalling()
     decreaseBeach()
@@ -451,8 +439,6 @@ function winDetection() {
     document.getElementById("endSpend").innerHTML = preventions.getTotalSpent.toLocaleString();
     document.getElementById("housesDestroyed").innerHTML = (housesArr.getNumHousesDestroyed / housesArr.getHouses.length) * 100;
     document.getElementById("duneLost").innerHTML = Math.round((dune.getLengthLost * canvasProp.getRealLength) * 100) / 100;
-    // var canvasElem = document.getElementById("canvas");
-    // canvasElem.style.opacity = "0.8";
 }
 
 function decreaseBeach() {
@@ -621,20 +607,6 @@ function drawRealDimLabels(canvas, xLabel, yLabel) {
     return canvas
 }
 
-
-// for(var i = 0; i < 2; i ++) {
-//     const tempHouse = housesArr.getHouses[i * 8]
-//     if (i > 0) {distRow = 0.13; fillColour = "#a9886e"}
-//     var line = []
-//     if(tempHouse.getStatus == false) {
-//         line = [
-//             {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
-//             {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-//             {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight - tempHouse.getHeight)},
-//             {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow + tempHouse.getWidth), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)},
-//             {"x": cW * (beach.getSlopeWidth + dune.absBankLength + tempHouse.getDunePos + distRow), "y": cH * (beach.getAbsMaxHeight - dune.getDuneHeight)}
-//         ];
-//     }
 
 function drawVerticalArrow(canvas, min, max, x, arrowDirection) {
     const cH = canvasProp.getCanvasHeight
@@ -880,7 +852,7 @@ function drawSideMaxWave(canvas) {
                 waveHeight = waveHeight * prev.getWaveDecrease
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
             } else {
-                waveHeight = waveHeight * 0.9;  // seabee only 10% decrease in wave height if sea & tide is higher than seabee
+                waveHeight = waveHeight * 0.75;  // seabee only 25% decrease in wave height if sea & tide is higher than seabee
                 canvas = drawSideWave(canvas, tH, cW, cH, prev.length - (prev.getWidth / 2), end, waveHeight, true)
             }
         } else if (prev.name == "seawall" || prev.name == "sand") {
